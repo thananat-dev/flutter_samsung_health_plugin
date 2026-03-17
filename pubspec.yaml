@@ -1,7 +1,8 @@
 name: flutter_samsung_health_plugin
-description: "A new Flutter plugin project."
+description: "A Flutter plugin for integrating Samsung Health features, permitting developers to connect to Samsung Health, request permissions, and read health metrics."
 version: 0.0.1
-homepage:
+homepage: https://github.com/thananat-dev/flutter_samsung_health_plugin
+repository: https://github.com/thananat-dev/flutter_samsung_health_plugin
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
