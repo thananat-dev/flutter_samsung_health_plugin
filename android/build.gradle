@@ -1,0 +1,112 @@
+group = "com.example.flutter_samsung_health_plugin"
+version = "1.0-SNAPSHOT"
+
+buildscript {
+    ext.kotlin_version = "2.2.20"
+    repositories {
+        google()
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath("com.android.tools.build:gradle:8.11.1")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version")
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+        maven {
+            url = uri("https://plugins.gradle.org/m2/")
+        }
+    }
+}
+
+repositories {
+    mavenLocal()
+    maven {
+        url = uri("${rootProject.projectDir}/../local_maven")
+    }
+}
+
+apply plugin: "com.android.library"
+apply plugin: "kotlin-android"
+apply plugin: "kotlin-parcelize"
+apply plugin: "maven-publish"
+
+android {
+    namespace = "com.example.flutter_samsung_health_plugin"
+
+    compileSdk = 36
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_17
+    }
+
+    sourceSets {
+        main.java.srcDirs += "src/main/kotlin"
+        test.java.srcDirs += "src/test/kotlin"
+    }
+
+    defaultConfig {
+        minSdk = 29
+    }
+
+    dependencies {
+        testImplementation("org.jetbrains.kotlin:kotlin-test")
+        testImplementation("org.mockito:mockito-core:5.0.0")
+        implementation("androidx.core:core-ktx:1.10.1")
+        implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
+    }
+
+    testOptions {
+        unitTests.all {
+            useJUnitPlatform()
+
+            testLogging {
+               events "passed", "skipped", "failed", "standardOut", "standardError"
+               outputs.upToDateWhen {false}
+               showStandardStreams = true
+            }
+        }
+    }
+}
+
+repositories {
+    flatDir { dirs 'libs' }
+}
+
+dependencies {
+    implementation("com.samsung.health:samsung-health-data-api:1.0.0")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version")
+    implementation ("com.google.code.gson:gson:2.11.0")
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            create("debugAarPublication", MavenPublication) {
+                groupId = project.group.toString()
+                artifactId = "samsung-health-data-api"
+                version = project.version.toString()
+                def aarFile = file("${buildDir}/outputs/aar/${project.name}-debug.aar")
+                if (aarFile.exists()) {
+                    artifact(aarFile) {
+                        extension = "aar"
+                    }
+                }
+                pom {
+                    name.set("Samsung Health Data API (local)")
+                    description.set("Local-published Samsung Health Data API AAR for compilation")
+                }
+            }
+        }
+    }
+}
